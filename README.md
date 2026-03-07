@@ -9,19 +9,13 @@ Zero external dependencies -- uses only Ruby standard library (`net/http`, `open
 Add to your Gemfile:
 
 ```ruby
-gem "aslan_payment"
+gem "aslan_payment", git: "https://github.com/Belkouche/aslan-payment-ruby.git"
 ```
 
 Then run:
 
 ```bash
 bundle install
-```
-
-Or install directly:
-
-```bash
-gem install aslan_payment
 ```
 
 ## Quick Start
