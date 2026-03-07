@@ -76,5 +76,67 @@ module AslanPayment
         query: query
       )
     end
+
+    # Update a payment link.
+    #
+    # @param id [String] payment link ID
+    # @param description [String, nil] updated description
+    # @param status [String, nil] "active" or "inactive"
+    # @param max_payments [Integer, nil] updated max payments
+    # @param expires_at [String, Time, nil] updated expiration date
+    # @param metadata [Hash, nil] updated metadata
+    # @return [Hash] updated payment link object
+    # @raise [AslanPayment::Error]
+    def update(id, description: nil, max_payments: nil, expires_at: nil,
+               status: nil, metadata: nil)
+      body = {}
+      body[:description] = description if description
+      body[:status] = status if status
+      body[:maxPayments] = max_payments if max_payments
+      body[:expiresAt] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
+      body[:metadata] = metadata if metadata
+
+      Http.request(
+        method: :patch,
+        path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
+        config: @config,
+        body: body
+      )
+    end
+
+    # Delete a payment link.
+    #
+    # @param id [String] payment link ID
+    # @return [nil]
+    # @raise [AslanPayment::Error]
+    def delete(id)
+      Http.request(
+        method: :delete,
+        path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
+        config: @config
+      )
+      nil
+    end
+
+    # Get the QR code for a payment link.
+    #
+    # @param id [String] payment link ID
+    # @param format [String, nil] QR code format (e.g., "png", "svg")
+    # @param size [Integer, nil] QR code size in pixels
+    # @return [Hash] QR code data
+    # @raise [AslanPayment::Error]
+    def get_qr(id, format: nil, size: nil)
+      query = {}
+      query["format"] = format if format
+      query["size"] = size if size
+
+      result = Http.request(
+        method: :get,
+        path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}/qr",
+        config: @config,
+        query: query
+      )
+      result["data"] || result
+    end
   end
 end

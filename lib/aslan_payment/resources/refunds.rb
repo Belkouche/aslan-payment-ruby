@@ -48,5 +48,28 @@ module AslanPayment
         config: @config
       )
     end
+
+    # List refunds with optional filters.
+    #
+    # @param status [String, nil] filter by status
+    # @param transaction_id [String, nil] filter by transaction ID
+    # @param page [Integer, nil] page number
+    # @param page_size [Integer, nil] items per page
+    # @return [Hash] paginated response
+    # @raise [AslanPayment::Error]
+    def list(status: nil, transaction_id: nil, page: nil, page_size: nil)
+      query = {}
+      query["status"] = status if status
+      query["transactionId"] = transaction_id if transaction_id
+      query["page"] = page if page
+      query["pageSize"] = page_size if page_size
+
+      Http.request(
+        method: :get,
+        path: "/api/v1/refunds",
+        config: @config,
+        query: query
+      )
+    end
   end
 end
