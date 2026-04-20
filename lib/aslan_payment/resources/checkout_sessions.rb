@@ -19,13 +19,18 @@ module AslanPayment
     # @param billing_address [Hash, nil] billing address
     # @param shipping_address [Hash, nil] shipping address
     # @param line_items [Array<Hash>, nil] line items
+    # @param sellers [Array<Hash>, nil] seller split payment details
+    # @param browser_info [Hash, nil] browser information for 3DS
+    # @param require3ds [Boolean, nil] whether to require 3DS authentication
+    # @param vendor_id [String, nil] vendor ID for marketplace payments
     # @param metadata [Hash, nil] key-value metadata
     # @param idempotency_key [String, nil] idempotency key
     # @return [Hash] checkout session object
     # @raise [AslanPayment::Error]
     def create(amount:, success_url:, cancel_url:, currency: "MAD",
                customer: nil, billing_address: nil, shipping_address: nil,
-               line_items: nil, metadata: nil, idempotency_key: nil)
+               line_items: nil, sellers: nil, browser_info: nil, require3ds: nil,
+               vendor_id: nil, metadata: nil, idempotency_key: nil)
       headers = {}
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
 
@@ -39,6 +44,10 @@ module AslanPayment
       body[:billing_address] = billing_address if billing_address
       body[:shipping_address] = shipping_address if shipping_address
       body[:line_items] = line_items if line_items
+      body[:sellers] = sellers if sellers
+      body[:browser_info] = browser_info if browser_info
+      body[:require3ds] = require3ds unless require3ds.nil?
+      body[:vendor_id] = vendor_id if vendor_id
       body[:metadata] = metadata if metadata
 
       Http.request(

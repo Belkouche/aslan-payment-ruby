@@ -7,6 +7,10 @@ require_relative "resources/transactions"
 require_relative "resources/payment_links"
 require_relative "resources/refunds"
 require_relative "resources/webhooks"
+require_relative "resources/vendors"
+require_relative "resources/customers"
+require_relative "resources/api_keys"
+require_relative "resources/webhooks_config"
 
 module AslanPayment
   class Client
@@ -21,6 +25,18 @@ module AslanPayment
 
     # @return [AslanPayment::Refunds]
     attr_reader :refunds
+
+    # @return [AslanPayment::Vendors]
+    attr_reader :vendors
+
+    # @return [AslanPayment::Customers]
+    attr_reader :customers
+
+    # @return [AslanPayment::ApiKeys]
+    attr_reader :api_keys
+
+    # @return [AslanPayment::WebhooksConfig]
+    attr_reader :webhooks_config
 
     # Create a new Aslan Payment API client.
     #
@@ -48,6 +64,10 @@ module AslanPayment
       @transactions = Transactions.new(@config)
       @payment_links = PaymentLinks.new(@config)
       @refunds = Refunds.new(@config)
+      @vendors = Vendors.new(@config)
+      @customers = Customers.new(@config)
+      @api_keys = ApiKeys.new(@config)
+      @webhooks_config = WebhooksConfig.new(@config)
     end
 
     # Whether the client is using a test mode key.

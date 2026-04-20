@@ -10,6 +10,10 @@ require_relative "aslan_payment/resources/transactions"
 require_relative "aslan_payment/resources/payment_links"
 require_relative "aslan_payment/resources/refunds"
 require_relative "aslan_payment/resources/webhooks"
+require_relative "aslan_payment/resources/vendors"
+require_relative "aslan_payment/resources/customers"
+require_relative "aslan_payment/resources/api_keys"
+require_relative "aslan_payment/resources/webhooks_config"
 
 module AslanPayment
 end
