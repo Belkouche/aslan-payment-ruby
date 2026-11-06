@@ -19,12 +19,12 @@ module AslanPayment
       body = { url: url }
       body[:events] = events if events
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/webhooks/config",
         config: @config,
         body: body
-      )
+      ))
     end
 
     # Retrieve the current webhook configuration.
@@ -32,11 +32,11 @@ module AslanPayment
     # @return [Hash] webhook config object
     # @raise [AslanPayment::Error]
     def retrieve
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/webhooks/config",
         config: @config
-      )
+      ))
     end
   end
 end

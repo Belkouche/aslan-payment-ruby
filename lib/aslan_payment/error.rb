@@ -11,6 +11,10 @@ module AslanPayment
       IDEMPOTENCY_ERROR
       NETWORK_ERROR
       SERVER_ERROR
+      PROVIDER_ACCOUNT_NOT_FOUND
+      PROVIDER_ACCOUNT_INACTIVE
+      PROVIDER_ACCOUNT_UNSUPPORTED
+      PROVIDER_ACCOUNT_RECURRING_DISABLED
     ].freeze
 
     attr_reader :code, :http_status, :details, :request_id
@@ -35,6 +39,7 @@ module AslanPayment
     def self.code_for_status(status, server_code = nil)
       return "VALIDATION_ERROR" if server_code == "VALIDATION_ERROR"
       return "IDEMPOTENCY_ERROR" if server_code == "IDEMPOTENCY_ERROR"
+      return server_code if server_code.to_s.start_with?("PROVIDER_ACCOUNT_") && CODES.include?(server_code)
 
       case status
       when 401 then "AUTHENTICATION_ERROR"

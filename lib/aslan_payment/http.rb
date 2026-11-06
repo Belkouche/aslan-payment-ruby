@@ -67,7 +67,8 @@ module AslanPayment
 
           # Error responses
           unless response.is_a?(Net::HTTPSuccess)
-            error_body = json["error"] || {}
+            # Flat { statusCode, code, error, message, details? } or nested { error: { code, message, details? } }
+            error_body = json.is_a?(Hash) ? (json["error"].is_a?(Hash) ? json["error"] : json) : {}
             code = Error.code_for_status(response.code.to_i, error_body["code"])
             raise Error.new(
               code,
@@ -92,6 +93,32 @@ module AslanPayment
       end
 
       raise last_error || Error.new("NETWORK_ERROR", "Request failed after retries")
+    end
+
+    # Unwrap a `{ "data": X }` envelope, returning X (other responses unchanged).
+    # @api private
+    def unwrap(json)
+      json.is_a?(Hash) && json.key?("data") ? json["data"] : json
+    end
+
+    # snake_case -> camelCase ("success_url" -> "successUrl"; already-camel names unchanged).
+    # @api private
+    def camelize(key)
+      key.to_s.gsub(/_([a-z\d])/) { Regexp.last_match(1).upcase }
+    end
+
+    # Deep-camelize Hash keys for the wire. "metadata" values are user-defined and left as-is.
+    # @api private
+    def camelize_keys(obj)
+      case obj
+      when Hash
+        obj.each_with_object({}) do |(k, v), h|
+          key = camelize(k)
+          h[key] = key == "metadata" ? v : camelize_keys(v)
+        end
+      when Array then obj.map { |v| camelize_keys(v) }
+      else obj
+      end
     end
 
     # @api private

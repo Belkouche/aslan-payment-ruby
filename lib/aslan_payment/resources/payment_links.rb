@@ -19,12 +19,13 @@ module AslanPayment
     # @param vendor_id [String, nil] vendor ID for marketplace payments
     # @param max_payments [Integer, nil] maximum number of payments
     # @param expires_at [String, Time, nil] expiration date
+    # @param provider_account [String, nil] alias of an additional PSP account (omit or "default" for the default account)
     # @param metadata [Hash, nil] key-value metadata
     # @param idempotency_key [String, nil]
     # @return [Hash] payment link object
     # @raise [AslanPayment::Error]
     def create(amount: nil, currency: "MAD", description: nil, min_amount: nil,
-               max_amount: nil, vendor_id: nil, max_payments: nil,
+               max_amount: nil, vendor_id: nil, provider_account: nil, max_payments: nil,
                expires_at: nil, metadata: nil, idempotency_key: nil)
       headers = {}
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
@@ -32,20 +33,21 @@ module AslanPayment
       body = { currency: currency }
       body[:amount] = amount unless amount.nil?
       body[:description] = description if description
-      body[:min_amount] = min_amount unless min_amount.nil?
-      body[:max_amount] = max_amount unless max_amount.nil?
-      body[:vendor_id] = vendor_id if vendor_id
-      body[:max_payments] = max_payments if max_payments
-      body[:expires_at] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
+      body[:minAmount] = min_amount unless min_amount.nil?
+      body[:maxAmount] = max_amount unless max_amount.nil?
+      body[:vendorId] = vendor_id if vendor_id
+      body[:providerAccount] = provider_account if provider_account
+      body[:maxPayments] = max_payments if max_payments
+      body[:expiresAt] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/payment-links",
         config: @config,
         body: body,
         headers: headers
-      )
+      ))
     end
 
     # Retrieve a payment link by ID.
@@ -54,11 +56,11 @@ module AslanPayment
     # @return [Hash] payment link object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
 
     # List payment links with optional filters.
@@ -71,7 +73,7 @@ module AslanPayment
     def list(page: nil, page_size: nil, status: nil)
       query = {}
       query["page"] = page if page
-      query["page_size"] = page_size if page_size
+      query["pageSize"] = page_size if page_size
       query["status"] = status if status
 
       Http.request(
@@ -101,12 +103,12 @@ module AslanPayment
       body[:expiresAt] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :patch,
         path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
         config: @config,
         body: body
-      )
+      ))
     end
 
     # Delete a payment link.
@@ -141,7 +143,7 @@ module AslanPayment
         config: @config,
         query: query
       )
-      result["data"] || result
+      Http.unwrap(result)
     end
   end
 end

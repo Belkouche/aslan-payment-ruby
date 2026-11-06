@@ -15,11 +15,11 @@ module AslanPayment
     # @return [Hash] transaction object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/transactions/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
 
     # List transactions with optional filters.
@@ -29,7 +29,7 @@ module AslanPayment
     # @param status [String, nil] filter by status
     # @param from [String, Time, nil] start date filter
     # @param to [String, Time, nil] end date filter
-    # @param sort_by [String, nil] sort field ("created_at", "amount", "status")
+    # @param sort_by [String, nil] sort field ("createdAt"/"created_at", "amount", "status")
     # @param sort_order [String, nil] "asc" or "desc"
     # @return [Hash] paginated response with :data and :pagination
     # @raise [AslanPayment::Error]
@@ -37,12 +37,12 @@ module AslanPayment
              sort_by: nil, sort_order: nil)
       query = {}
       query["page"] = page if page
-      query["page_size"] = page_size if page_size
+      query["pageSize"] = page_size if page_size
       query["status"] = status if status
       query["from"] = from.is_a?(Time) ? from.iso8601 : from if from
       query["to"] = to.is_a?(Time) ? to.iso8601 : to if to
-      query["sort_by"] = sort_by if sort_by
-      query["sort_order"] = sort_order if sort_order
+      query["sortBy"] = Http.camelize(sort_by) if sort_by
+      query["sortOrder"] = sort_order if sort_order
 
       Http.request(
         method: :get,

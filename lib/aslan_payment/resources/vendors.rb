@@ -24,18 +24,18 @@ module AslanPayment
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
 
       body = { name: name }
-      body[:external_id] = external_id if external_id
+      body[:externalId] = external_id if external_id
       body[:email] = email if email
-      body[:commission_rate] = commission_rate unless commission_rate.nil?
+      body[:commissionRate] = commission_rate unless commission_rate.nil?
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/vendors",
         config: @config,
         body: body,
         headers: headers
-      )
+      ))
     end
 
     # Retrieve a vendor by ID.
@@ -44,11 +44,11 @@ module AslanPayment
     # @return [Hash] vendor object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/vendors/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
 
     # List vendors with optional filters.
@@ -64,7 +64,7 @@ module AslanPayment
       query["page"] = page if page
       query["limit"] = limit if limit
       query["search"] = search if search
-      query["is_active"] = is_active unless is_active.nil?
+      query["isActive"] = is_active unless is_active.nil?
 
       Http.request(
         method: :get,
@@ -89,17 +89,17 @@ module AslanPayment
       body = {}
       body[:name] = name if name
       body[:email] = email if email
-      body[:commission_rate] = commission_rate unless commission_rate.nil?
-      body[:external_id] = external_id if external_id
-      body[:is_active] = is_active unless is_active.nil?
+      body[:commissionRate] = commission_rate unless commission_rate.nil?
+      body[:externalId] = external_id if external_id
+      body[:isActive] = is_active unless is_active.nil?
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :patch,
         path: "/api/v1/vendors/#{URI.encode_www_form_component(id)}",
         config: @config,
         body: body
-      )
+      ))
     end
 
     # Delete (soft-delete) a vendor.
@@ -108,11 +108,11 @@ module AslanPayment
     # @return [Hash] deleted vendor object
     # @raise [AslanPayment::Error]
     def delete(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :delete,
         path: "/api/v1/vendors/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
   end
 end

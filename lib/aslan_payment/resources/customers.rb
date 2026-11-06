@@ -21,10 +21,10 @@ module AslanPayment
     def list(page: nil, page_size: nil, search: nil, sort_by: nil, sort_order: nil)
       query = {}
       query["page"] = page if page
-      query["page_size"] = page_size if page_size
+      query["pageSize"] = page_size if page_size
       query["search"] = search if search
-      query["sort_by"] = sort_by if sort_by
-      query["sort_order"] = sort_order if sort_order
+      query["sortBy"] = Http.camelize(sort_by) if sort_by
+      query["sortOrder"] = sort_order if sort_order
 
       Http.request(
         method: :get,
@@ -40,11 +40,11 @@ module AslanPayment
     # @return [Hash] customer object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/customers/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
   end
 end
