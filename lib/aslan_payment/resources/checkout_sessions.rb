@@ -23,6 +23,7 @@ module AslanPayment
     # @param browser_info [Hash, nil] browser information for 3DS
     # @param require3ds [Boolean, nil] whether to require 3DS authentication
     # @param vendor_id [String, nil] vendor ID for marketplace payments
+    # @param provider_account [String, nil] alias of an additional PSP account (omit or "default" for the default account)
     # @param metadata [Hash, nil] key-value metadata
     # @param idempotency_key [String, nil] idempotency key
     # @return [Hash] checkout session object
@@ -30,7 +31,7 @@ module AslanPayment
     def create(amount:, success_url:, cancel_url:, currency: "MAD",
                customer: nil, billing_address: nil, shipping_address: nil,
                line_items: nil, sellers: nil, browser_info: nil, require3ds: nil,
-               vendor_id: nil, metadata: nil, idempotency_key: nil)
+               vendor_id: nil, provider_account: nil, metadata: nil, idempotency_key: nil)
       headers = {}
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
 
@@ -48,6 +49,7 @@ module AslanPayment
       body[:browser_info] = browser_info if browser_info
       body[:require3ds] = require3ds unless require3ds.nil?
       body[:vendor_id] = vendor_id if vendor_id
+      body[:providerAccount] = provider_account if provider_account
       body[:metadata] = metadata if metadata
 
       Http.request(

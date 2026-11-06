@@ -67,6 +67,15 @@ session = client.checkout_sessions.create(
   idempotency_key: "unique-key-123" # Optional
 )
 
+# Process on an additional PSP account (alias); omit or use "default" for the default account.
+# Also supported by payment_links.create. Responses carry "providerAccount".
+session = client.checkout_sessions.create(
+  amount: 10_000,
+  success_url: "https://example.com/success",
+  cancel_url: "https://example.com/cancel",
+  provider_account: "foreign"
+)
+
 # Retrieve a checkout session
 session = client.checkout_sessions.retrieve("cs_xxx")
 ```
@@ -175,6 +184,10 @@ end
 | `IDEMPOTENCY_ERROR` | Idempotency key conflict |
 | `NETWORK_ERROR` | Connection or timeout failure |
 | `SERVER_ERROR` | Server-side error (5xx) |
+| `PROVIDER_ACCOUNT_NOT_FOUND` | `provider_account` names no account of your merchant |
+| `PROVIDER_ACCOUNT_INACTIVE` | The `provider_account` is deactivated |
+| `PROVIDER_ACCOUNT_UNSUPPORTED` | The account's provider cannot take this request |
+| `PROVIDER_ACCOUNT_RECURRING_DISABLED` | The account does not allow recurring payments |
 
 ## Automatic Retries
 

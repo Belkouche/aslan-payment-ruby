@@ -19,12 +19,13 @@ module AslanPayment
     # @param vendor_id [String, nil] vendor ID for marketplace payments
     # @param max_payments [Integer, nil] maximum number of payments
     # @param expires_at [String, Time, nil] expiration date
+    # @param provider_account [String, nil] alias of an additional PSP account (omit or "default" for the default account)
     # @param metadata [Hash, nil] key-value metadata
     # @param idempotency_key [String, nil]
     # @return [Hash] payment link object
     # @raise [AslanPayment::Error]
     def create(amount: nil, currency: "MAD", description: nil, min_amount: nil,
-               max_amount: nil, vendor_id: nil, max_payments: nil,
+               max_amount: nil, vendor_id: nil, provider_account: nil, max_payments: nil,
                expires_at: nil, metadata: nil, idempotency_key: nil)
       headers = {}
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
@@ -35,6 +36,7 @@ module AslanPayment
       body[:min_amount] = min_amount unless min_amount.nil?
       body[:max_amount] = max_amount unless max_amount.nil?
       body[:vendor_id] = vendor_id if vendor_id
+      body[:providerAccount] = provider_account if provider_account
       body[:max_payments] = max_payments if max_payments
       body[:expires_at] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
       body[:metadata] = metadata if metadata
