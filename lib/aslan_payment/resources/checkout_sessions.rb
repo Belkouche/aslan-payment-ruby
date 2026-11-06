@@ -38,17 +38,18 @@ module AslanPayment
       body = {
         amount: amount,
         currency: currency,
-        success_url: success_url,
-        cancel_url: cancel_url,
+        successUrl: success_url,
+        cancelUrl: cancel_url,
       }
-      body[:customer] = customer if customer
-      body[:billing_address] = billing_address if billing_address
-      body[:shipping_address] = shipping_address if shipping_address
-      body[:line_items] = line_items if line_items
-      body[:sellers] = sellers if sellers
-      body[:browser_info] = browser_info if browser_info
+      # Nested hashes accept snake_case or camelCase keys (e.g. :phone_country_code, :unit_price).
+      body[:customer] = Http.camelize_keys(customer) if customer
+      body[:billingAddress] = Http.camelize_keys(billing_address) if billing_address
+      body[:shippingAddress] = Http.camelize_keys(shipping_address) if shipping_address
+      body[:lineItems] = Http.camelize_keys(line_items) if line_items
+      body[:sellers] = Http.camelize_keys(sellers) if sellers
+      body[:browserInfo] = Http.camelize_keys(browser_info) if browser_info
       body[:require3ds] = require3ds unless require3ds.nil?
-      body[:vendor_id] = vendor_id if vendor_id
+      body[:vendorId] = vendor_id if vendor_id
       body[:providerAccount] = provider_account if provider_account
       body[:metadata] = metadata if metadata
 

@@ -33,21 +33,21 @@ module AslanPayment
       body = { currency: currency }
       body[:amount] = amount unless amount.nil?
       body[:description] = description if description
-      body[:min_amount] = min_amount unless min_amount.nil?
-      body[:max_amount] = max_amount unless max_amount.nil?
-      body[:vendor_id] = vendor_id if vendor_id
+      body[:minAmount] = min_amount unless min_amount.nil?
+      body[:maxAmount] = max_amount unless max_amount.nil?
+      body[:vendorId] = vendor_id if vendor_id
       body[:providerAccount] = provider_account if provider_account
-      body[:max_payments] = max_payments if max_payments
-      body[:expires_at] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
+      body[:maxPayments] = max_payments if max_payments
+      body[:expiresAt] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/payment-links",
         config: @config,
         body: body,
         headers: headers
-      )
+      ))
     end
 
     # Retrieve a payment link by ID.
@@ -56,11 +56,11 @@ module AslanPayment
     # @return [Hash] payment link object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
 
     # List payment links with optional filters.
@@ -73,7 +73,7 @@ module AslanPayment
     def list(page: nil, page_size: nil, status: nil)
       query = {}
       query["page"] = page if page
-      query["page_size"] = page_size if page_size
+      query["pageSize"] = page_size if page_size
       query["status"] = status if status
 
       Http.request(
@@ -103,12 +103,12 @@ module AslanPayment
       body[:expiresAt] = expires_at.is_a?(Time) ? expires_at.iso8601 : expires_at if expires_at
       body[:metadata] = metadata if metadata
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :patch,
         path: "/api/v1/payment-links/#{URI.encode_www_form_component(id)}",
         config: @config,
         body: body
-      )
+      ))
     end
 
     # Delete a payment link.
@@ -143,7 +143,7 @@ module AslanPayment
         config: @config,
         query: query
       )
-      result["data"] || result
+      Http.unwrap(result)
     end
   end
 end

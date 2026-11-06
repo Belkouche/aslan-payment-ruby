@@ -25,13 +25,13 @@ module AslanPayment
         type: type,
       }
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/api-keys",
         config: @config,
         body: body,
         headers: headers
-      )
+      ))
     end
 
     # List all API keys.

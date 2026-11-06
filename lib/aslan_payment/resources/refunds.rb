@@ -22,18 +22,18 @@ module AslanPayment
       headers["Idempotency-Key"] = idempotency_key if idempotency_key
 
       body = {
-        transaction_id: transaction_id,
+        transactionId: transaction_id,
         amount: amount,
       }
       body[:reason] = reason if reason
 
-      Http.request(
+      Http.unwrap(Http.request(
         method: :post,
         path: "/api/v1/refunds",
         config: @config,
         body: body,
         headers: headers
-      )
+      ))
     end
 
     # Retrieve a refund by ID.
@@ -42,11 +42,11 @@ module AslanPayment
     # @return [Hash] refund object
     # @raise [AslanPayment::Error]
     def retrieve(id)
-      Http.request(
+      Http.unwrap(Http.request(
         method: :get,
         path: "/api/v1/refunds/#{URI.encode_www_form_component(id)}",
         config: @config
-      )
+      ))
     end
 
     # List refunds with optional filters.
